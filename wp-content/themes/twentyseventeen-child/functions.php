@@ -82,7 +82,6 @@ class filmsMetaBox {
 	 */
 	public function __construct() {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
-//		add_action( 'save_post',      array( $this, 'save'         ) );
 	}
 
 	/**
@@ -102,16 +101,6 @@ class filmsMetaBox {
 				'high'
 			);
 		}
-	}
-
-	/**
-	 * Save the meta when the post is saved.
-	 *
-	 * @param int $post_id The ID of the post being saved.
-	 */
-	public function save( $post_id ) {
-
-
 	}
 
 
@@ -259,3 +248,48 @@ function save_films( $post_id, $post ) {
 	}
 
 }
+
+
+function wooc_extra_register_fields() {
+
+       ?>
+
+    <p class="form-row form-row-wide">
+
+        <label for="reg_billing_skype"><?php _e( 'Skype', 'woocommerce' ); ?><span class="required">*</span></label>
+
+        <input type="text" class="input-text" name="billing_skype" id="reg_billing_skype" value="<?php if ( ! empty( $_POST['billing_skype'] ) ) esc_attr_e( $_POST['billing_skype'] ); ?>" />
+
+    </p>
+
+
+
+<?php
+
+}
+add_action( 'woocommerce_register_form_start', 'wooc_extra_register_fields' );
+
+function wooc_validate_extra_register_fields( $username, $email, $validation_errors ) {
+
+       if ( isset( $_POST['billing_skype'] ) && empty( $_POST['billing_skype'] ) ) {
+
+	       $validation_errors->add( 'billing_skype_error', __( '<strong>Error</strong>: Skype is required!', 'woocommerce' ) );
+
+       }
+
+}
+add_action( 'woocommerce_register_post', 'wooc_validate_extra_register_fields', 10, 3 );
+
+function wooc_save_extra_register_fields( $customer_id ) {
+
+       if ( isset( $_POST['billing_skype'] ) ) {
+
+	       // WooCommerce billing first name.
+
+	       update_user_meta( $customer_id, 'billing_skype', sanitize_text_field( $_POST['billing_skype'] ) );
+
+       }
+
+
+}
+add_action( 'woocommerce_created_customer', 'wooc_save_extra_register_fields' );
