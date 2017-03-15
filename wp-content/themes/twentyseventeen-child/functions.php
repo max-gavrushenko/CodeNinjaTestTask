@@ -1,6 +1,6 @@
 <?php
 
-if ( ! function_exists('custom_post_type_film') ) {
+if ( ! function_exists( 'custom_post_type_film' ) ) {
 
 // Register Custom Post Type
 	function custom_post_type_film() {
@@ -34,28 +34,34 @@ if ( ! function_exists('custom_post_type_film') ) {
 			'items_list_navigation' => __( 'Films list navigation', 'twentyseventeen-child' ),
 			'filter_items_list'     => __( 'Filter items list', 'twentyseventeen-child' ),
 		);
-		$args = array(
-			'label'                 => __( 'Film', 'twentyseventeen-child' ),
-			'description'           => __( 'Post Type Description', 'twentyseventeen-child' ),
-			'labels'                => $labels,
-			'supports'              => array( 'title', 'editor', 'excerpt', 'thumbnail' ),
-			'taxonomies'            => array( 'category' ),
-			'hierarchical'          => false,
-			'public'                => true,
-			'show_ui'               => true,
-			'show_in_menu'          => true,
-			'menu_position'         => 5,
-			'show_in_admin_bar'     => true,
-			'show_in_nav_menus'     => true,
-			'can_export'            => true,
-			'has_archive'           => true,
-			'exclude_from_search'   => false,
-			'publicly_queryable'    => true,
-			'capability_type'       => 'post',
+		$args   = array(
+			'label'               => __( 'Film', 'twentyseventeen-child' ),
+			'description'         => __( 'Post Type Description', 'twentyseventeen-child' ),
+			'labels'              => $labels,
+			'supports'            => array(
+				'title',
+				'editor',
+				'excerpt',
+				'thumbnail'
+			),
+			'taxonomies'          => array( 'category' ),
+			'hierarchical'        => FALSE,
+			'public'              => TRUE,
+			'show_ui'             => TRUE,
+			'show_in_menu'        => TRUE,
+			'menu_position'       => 5,
+			'show_in_admin_bar'   => TRUE,
+			'show_in_nav_menus'   => TRUE,
+			'can_export'          => TRUE,
+			'has_archive'         => TRUE,
+			'exclude_from_search' => FALSE,
+			'publicly_queryable'  => TRUE,
+			'capability_type'     => 'post',
 		);
 		register_post_type( 'films', $args );
 
 	}
+
 	add_action( 'init', 'custom_post_type_film', 0 );
 
 }
@@ -68,7 +74,7 @@ function call_filmsMetaBox() {
 }
 
 if ( is_admin() ) {
-	add_action( 'load-post.php',     'call_filmsMetaBox' );
+	add_action( 'load-post.php', 'call_filmsMetaBox' );
 	add_action( 'load-post-new.php', 'call_filmsMetaBox' );
 }
 
@@ -115,26 +121,28 @@ class filmsMetaBox {
 		wp_nonce_field( 'films_meta_inner_custom_box', 'films_meta_inner_custom_box_nonce' );
 
 		// Use get_post_meta to retrieve an existing value from the database.
-		$subTitleFilm = get_post_meta( $post->ID, 'subTitleFilm', true );
-		$price = get_post_meta( $post->ID, '_regular_price', true );
+		$subTitleFilm = get_post_meta( $post->ID, 'subTitleFilm', TRUE );
+		$price        = get_post_meta( $post->ID, '_regular_price', TRUE );
 
 		// Display the form, using the current value.
 		?>
-		<label>
+        <label>
 			<?php _e( 'Sub Title', 'twentyseventeen-child' ); ?>:
 
-		<input type="text" id="subTitleFilm_field" name="subTitleFilm" value="<?php echo esc_attr( $subTitleFilm ); ?>" size="25" /></label>
-		<br>
-		<label>
+            <input type="text" id="subTitleFilm_field" name="subTitleFilm"
+                   value="<?php echo esc_attr( $subTitleFilm ); ?>" size="25"/></label>
+        <br>
+        <label>
 			<?php _e( 'Price', 'twentyseventeen-child' ); ?>:
 
-			<input type="text" id="price_field" name="_regular_price" value="<?php echo esc_attr( $price ); ?>" size="25" /></label>
+            <input type="text" id="price_field" name="_regular_price"
+                   value="<?php echo esc_attr( $price ); ?>" size="25"/></label>
 		<?php
 	}
 }
 
 
-add_action('save_post', 'save_films',10,2);
+add_action( 'save_post', 'save_films', 10, 2 );
 function save_films( $post_id, $post ) {
 //	var_dump( $post_id, $post );
 //	exit;
@@ -176,7 +184,7 @@ function save_films( $post_id, $post ) {
 
 		// Sanitize the user input.
 		$subTitleFilm = sanitize_text_field( $_POST['subTitleFilm'] );
-		$price = sanitize_text_field( $_POST['_regular_price'] );
+		$price        = sanitize_text_field( $_POST['_regular_price'] );
 		$thumbnail_id = sanitize_text_field( $_POST['_thumbnail_id'] );
 
 		$post_category = ( $_POST['post_category'] );
@@ -197,10 +205,10 @@ function save_films( $post_id, $post ) {
 		$product_id = get_post_meta( $post_id, '_product_assigned', TRUE );
 
 
-		if ( !$product_id ) {
+		if ( ! $product_id ) {
 			$product_id = wp_insert_post( $post_args );
 			if ( ! is_wp_error( $product_id ) ) {
-				update_post_meta($post_id,'_product_assigned', $product_id);
+				update_post_meta( $post_id, '_product_assigned', $product_id );
 			}
 			// Sanitize the user input.
 			$price = sanitize_text_field( $_POST['_regular_price'] );
@@ -236,7 +244,7 @@ function save_films( $post_id, $post ) {
 		} else {
 			//update prod
 			$post_args['ID'] = $product_id;
-			$item_id = wp_update_post( $post_args );
+			$item_id         = wp_update_post( $post_args );
 
 			// Sanitize the user input.
 			$price = sanitize_text_field( $_POST['_regular_price'] );
@@ -248,30 +256,36 @@ function save_films( $post_id, $post ) {
 		}
 		set_post_thumbnail( $product_id, $thumbnail_id );
 
-		foreach ($post_category as $cat){
-		    if ($cat !== '0'){
+		foreach ( $post_category as $cat ) {
+			if ( $cat !== '0' ) {
 
-			    $cat_name = get_the_category_by_ID( intval ($cat) );
-			    $args = array(
-				    'taxonomy'      => array( 'product_cat' ),
-				    'get'           => 'all'
-			    );
+				$cat_name = get_the_category_by_ID( intval( $cat ) );
+				$args     = array(
+					'taxonomy' => array( 'product_cat' ),
+					'get'      => 'all'
+				);
 
-			    $woo_terms = get_terms( $args );
+				$woo_terms = get_terms( $args );
+				if ( empty( $woo_terms ) ) {
+					$result_id = wp_insert_term( $cat_name, 'product_cat' );
+					if ( ! is_wp_error( $result_id ) ) {
+						$result = wp_set_post_terms( $product_id, $result_id['term_id'], 'product_cat', TRUE );
+					}
+				}
 
-			    foreach( $woo_terms as $term ){
-			        if ($term->name == $cat_name){
-                        $result = wp_set_post_terms( $product_id, $term->term_id, 'product_cat', true );
-                    } else {
-				        $result_id = wp_insert_term( $cat_name, 'product_cat' );
-				        if( !is_wp_error( $result_id ) ){
-					        $result = wp_set_post_terms( $product_id, $result_id['term_id'], 'product_cat', true );
-				        }
-                    }
-			    }
-            }
+				foreach ( $woo_terms as $term ) {
+					if ( $term->name == $cat_name ) {
+						$result = wp_set_post_terms( $product_id, $term->term_id, 'product_cat', TRUE );
+					} else {
+						$result_id = wp_insert_term( $cat_name, 'product_cat' );
+						if ( ! is_wp_error( $result_id ) ) {
+							$result = wp_set_post_terms( $product_id, $result_id['term_id'], 'product_cat', TRUE );
+						}
+					}
+				}
+			}
 
-        }
+		}
 	}
 
 }
@@ -279,48 +293,54 @@ function save_films( $post_id, $post ) {
 
 function wooc_extra_register_fields() {
 
-       ?>
+	?>
 
     <p class="form-row form-row-wide">
 
-        <label for="reg_billing_skype"><?php _e( 'Skype', 'woocommerce' ); ?><span class="required">*</span></label>
+        <label for="reg_billing_skype"><?php _e( 'Skype', 'woocommerce' ); ?>
+            <span class="required">*</span></label>
 
-        <input type="text" class="input-text" name="billing_skype" id="reg_billing_skype" value="<?php if ( ! empty( $_POST['billing_skype'] ) ) esc_attr_e( $_POST['billing_skype'] ); ?>" />
+        <input type="text" class="input-text" name="billing_skype"
+               id="reg_billing_skype"
+               value="<?php if ( ! empty( $_POST['billing_skype'] ) ) {
+			       esc_attr_e( $_POST['billing_skype'] );
+		       } ?>"/>
 
     </p>
 
 
-
-<?php
+	<?php
 
 }
+
 add_action( 'woocommerce_register_form_start', 'wooc_extra_register_fields' );
 
 function wooc_validate_extra_register_fields( $username, $email, $validation_errors ) {
 
-       if ( isset( $_POST['billing_skype'] ) && empty( $_POST['billing_skype'] ) ) {
+	if ( isset( $_POST['billing_skype'] ) && empty( $_POST['billing_skype'] ) ) {
 
-	       $validation_errors->add( 'billing_skype_error', __( '<strong>Error</strong>: Skype is required!', 'woocommerce' ) );
+		$validation_errors->add( 'billing_skype_error', __( '<strong>Error</strong>: Skype is required!', 'woocommerce' ) );
 
-       }
+	}
 
 }
+
 add_action( 'woocommerce_register_post', 'wooc_validate_extra_register_fields', 10, 3 );
 
 function wooc_save_extra_register_fields( $customer_id ) {
 
-       if ( isset( $_POST['billing_skype'] ) ) {
+	if ( isset( $_POST['billing_skype'] ) ) {
 
-	       // WooCommerce billing first name.
+		// WooCommerce billing first name.
 
-	       update_user_meta( $customer_id, 'billing_skype', sanitize_text_field( $_POST['billing_skype'] ) );
+		update_user_meta( $customer_id, 'billing_skype', sanitize_text_field( $_POST['billing_skype'] ) );
 
-       }
+	}
 
 
 }
-add_action( 'woocommerce_created_customer', 'wooc_save_extra_register_fields' );
 
+add_action( 'woocommerce_created_customer', 'wooc_save_extra_register_fields' );
 
 
 // After registration, redirect to home page
@@ -328,4 +348,13 @@ function custom_registration_redirect() {
 
 	return home_url( '/product-category/featured/' );
 }
-add_action('woocommerce_registration_redirect', 'custom_registration_redirect', 2);
+
+add_action( 'woocommerce_registration_redirect', 'custom_registration_redirect', 2 );
+
+add_filter( 'add_to_cart_redirect', 'films_add_to_cart_redirect' );
+function films_add_to_cart_redirect() {
+	global $woocommerce;
+	$checkout_url = $woocommerce->cart->get_checkout_url();
+
+	return $checkout_url;
+}
