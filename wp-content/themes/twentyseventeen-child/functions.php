@@ -179,6 +179,8 @@ function save_films( $post_id, $post ) {
 		$price = sanitize_text_field( $_POST['_regular_price'] );
 		$thumbnail_id = sanitize_text_field( $_POST['_thumbnail_id'] );
 
+		$post_category = ( $_POST['post_category'] );
+
 		// Update the meta field.
 		update_post_meta( $post_id, 'subTitleFilm', $subTitleFilm );
 		update_post_meta( $post_id, '_regular_price', $price );
@@ -245,6 +247,31 @@ function save_films( $post_id, $post ) {
 
 		}
 		set_post_thumbnail( $product_id, $thumbnail_id );
+
+		foreach ($post_category as $cat){
+		    if ($cat !== '0'){
+
+			    $cat_name = get_the_category_by_ID( intval ($cat) );
+			    $args = array(
+				    'taxonomy'      => array( 'product_cat' ),
+				    'get'           => 'all'
+			    );
+
+			    $woo_terms = get_terms( $args );
+
+			    foreach( $woo_terms as $term ){
+			        if ($term->name == $cat_name){
+                        $result = wp_set_post_terms( $product_id, $term->term_id, 'product_cat', true );
+                    } else {
+				        $result_id = wp_insert_term( $cat_name, 'product_cat' );
+				        if( !is_wp_error( $result_id ) ){
+					        $result = wp_set_post_terms( $product_id, $result_id['term_id'], 'product_cat', true );
+				        }
+                    }
+			    }
+            }
+
+        }
 	}
 
 }
