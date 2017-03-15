@@ -320,3 +320,12 @@ function wooc_save_extra_register_fields( $customer_id ) {
 
 }
 add_action( 'woocommerce_created_customer', 'wooc_save_extra_register_fields' );
+
+
+
+// After registration, redirect to home page
+function custom_registration_redirect() {
+
+	return home_url( '/product-category/featured/' );
+}
+add_action('woocommerce_registration_redirect', 'custom_registration_redirect', 2);
